@@ -38,6 +38,10 @@ Everything lives in one IIFE inside a single `<script>`. It is a vanilla-JS hash
 - **No 360°:** a realistic 360° is not possible from a single photo (it distorts), so the interaction is the tilt below instead. An earlier version had procedural 3D turntable models on a canvas; they were removed when the photos moved to Unsplash, since a generic 3D model no longer matched the photo.
 - **Tilt + dynamic shadow:** the main product photo (`.tilt`) turns towards the mouse by up to `TILT_MAX` = ±18° (`perspective(1700px)`, larger perspective keeps the near edge from overflowing the page) and shows a moving glare. A blurred `.tilt-shadow` under it moves opposite to the cursor and gets larger/stronger with the tilt (`--sx/--sy/--sb/--so` on `.photo-stage`). It is set imperatively via CSS variables by a delegated `pointermove` on `#app` (mouse only, disabled under `prefers-reduced-motion`), so it never goes through `render()`. The shadow is only visible on the light theme; on the dark page it is nearly invisible.
 
+## Publishing
+
+The site is published with **GitHub Pages** from the `main` branch, root folder, at https://marquinhosluiz1604-sudo.github.io/aceplace/ (repo `marquinhosluiz1604-sudo/aceplace`, public). There is no build: pushing to `main` republishes in ~1 minute (Settings → Pages shows the status). Pages serves from Linux, so file paths are **case-sensitive**: keep the names in `LOCAL_PHOTOS` identical to the files in `images-web/`. Routes are `#/...` hashes, so no server-side routing or 404 handling is needed. The originals in `images/` are also served publicly (they are in the repo) but the site only loads `images-web/`. Credentials are not stored in the repo or in the git config: a push asks for a GitHub token.
+
 ## Gotchas
 
 - Views build HTML by string concatenation and only escape where they call `escapeHtml()`. This is fine for the static `PRODUCTS` data, but always wrap user-typed input (as the review form does) before interpolating it.
