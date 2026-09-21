@@ -252,9 +252,34 @@
   /* The portrait studio shots (2:3) get cropped into wider frames (cards, gallery): keep the racquet head / the shirt collar in view. */
   img[src*="/raquete-"][src$="_front.jpg"] { object-position: 50% 0%; }
   img[src*="/camiseta-"][src$="_front.jpg"] { object-position: 50% 12%; }
-  footer.site { border-top: 1px solid var(--border); padding: 32px 24px; display: flex; align-items: center; justify-content: space-between; }
-  footer.site .brand { font-family: 'Archivo', sans-serif; font-weight: 700; color: var(--accent); }
-  footer.site .tag { font-size: 13px; color: var(--muted); }
+  /* "Produtos mais buscados": text-only tabs + link columns, just above the footer */
+  .hot { border-top: 1px solid var(--border); }
+  .hot-inner, .foot-inner { max-width: 1360px; margin: 0 auto; padding-left: 24px; padding-right: 24px; }
+  .hot-inner { padding-top: 48px; padding-bottom: 44px; }
+  .hot h2 { margin: 0 0 22px 0; font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; letter-spacing: -0.01em; }
+  .hot-tabs { display: flex; gap: 28px; overflow-x: auto; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .hot-tab { flex: none; padding: 0 0 12px 0; margin-bottom: -1px; border: none; border-bottom: 2px solid transparent; background: none; font-family: inherit; font-size: 15px; font-weight: 500; color: var(--muted); cursor: pointer; transition: color .15s ease, border-color .15s ease; }
+  .hot-tab:hover { color: var(--text); }
+  .hot-tab[aria-selected="true"] { color: var(--text); font-weight: 700; border-bottom-color: var(--accent); }
+  .hot-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 28px 40px; }
+  .hot-cols[hidden] { display: none; }
+  .hot-col h3, .foot-col h3 { margin: 0 0 12px 0; font-family: 'Work Sans', system-ui, sans-serif; font-size: 14px; font-weight: 700; }
+  .hot-col ul, .foot-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .hot-col li, .foot-col li { font-size: 14px; line-height: 1.45; }
+  .hot-col a, .foot-col a { color: var(--muted); }
+  @media (max-width: 480px) { .hot-tabs { gap: 20px; } }
+  .hot-col a:hover, .foot-col a:hover { color: var(--accent); text-decoration: underline; }
+  footer.site { border-top: 1px solid var(--border); }
+  .foot-inner { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr); gap: 32px 40px; padding-top: 40px; padding-bottom: 44px; }
+  @media (max-width: 720px) { .foot-inner { grid-template-columns: minmax(0, 1fr); } }
+  footer.site .brand { font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 20px; color: var(--accent); }
+  footer.site .tag { display: block; margin-top: 8px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+  .foot-col li.static { font-size: 14px; color: var(--muted); cursor: default; }
+  .about { max-width: 720px; margin: 0 auto; padding: 64px 24px 88px; }
+  .about h1 { margin: 0 0 28px 0; font-size: clamp(32px, 5vw, 52px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+  .about p { margin: 0 0 20px 0; font-size: 17px; line-height: 1.75; color: var(--muted); }
+  .about p:last-child { margin-bottom: 0; }
+  @media (prefers-reduced-motion: reduce) { .hot-tab { transition: none; } }
 
   .seller-banner { background: var(--card); border-bottom: 1px solid var(--border); padding: 40px 24px; }
   .seller-banner-inner { display: flex; align-items: center; gap: 20px; }
@@ -908,6 +933,7 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
     coupon: null,
     couponMessage: '',
     couponCode: null,
+    hotTab: 'raquetes',
     sizeSel: {},
     sizeError: null,
     checkoutCouponInput: '',
@@ -1168,12 +1194,103 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     menuPanel();
   }
 
+  // "Produtos mais buscados": each link is { t: label, id: productId } (exact product) or { t: label, cat: shop slug } (generic term).
+  // Only products that exist in PRODUCTS may be listed (a test checks this).
+  var HOT_TABS = [
+    { key: 'raquetes', label: 'Raquetes', cols: [
+      { title: 'Destaques', links: [{ t: 'Raquetes de tênis', cat: 'raquetes-cordas' }, { t: 'Cordas de tênis', cat: 'raquetes-cordas' }, { t: 'Overgrips', cat: 'raquetes-cordas' }, { t: 'Antivibradores', cat: 'raquetes-cordas' }] },
+      { title: 'Por modelo', links: [{ t: 'Raquete StringLab Tour 100', id: 'raquete-tour-100' }, { t: 'Raquete StringLab Pro Control 98', id: 'raquete-pro-control-98' }, { t: 'Corda Natural Gut 1.30mm', id: 'corda-natural-gut' }] }
+    ] },
+    { key: 'calcados', label: 'Calçados', cols: [
+      { title: 'Destaques', links: [{ t: 'Tênis de quadra', cat: 'calcados' }] },
+      { title: 'Feminino', links: [{ t: 'Tênis MatchStep Pro feminino', id: 'tenis-matchstep-feminino' }] },
+      { title: 'Masculino', links: [{ t: 'Tênis MatchStep Pro masculino', id: 'tenis-matchstep-masculino' }] }
+    ] },
+    { key: 'vestuario', label: 'Vestuário', cols: [
+      { title: 'Destaques', links: [{ t: 'Camisetas dry-fit', cat: 'roupas' }, { t: 'Shorts de tênis', cat: 'roupas' }] },
+      { title: 'Feminino', links: [{ t: 'Camiseta Dry-Fit Court feminina', id: 'camiseta-dryfit-feminina' }, { t: 'Shorts CourtWear feminino', id: 'shorts-feminino' }] },
+      { title: 'Masculino', links: [{ t: 'Camiseta Dry-Fit Court masculina', id: 'camiseta-dryfit-masculina' }, { t: 'Shorts CourtWear masculino', id: 'shorts-masculino' }] }
+    ] },
+    { key: 'acessorios', label: 'Acessórios', cols: [
+      { title: 'Destaques', links: [{ t: 'Viseira Court Basic', id: 'viseira-court-basic' }, { t: 'Meia Esportiva Cano Alto', id: 'meia-esportiva-cano-alto' }, { t: 'Overgrip StringLab Grip', id: 'overgrip-stringlab' }, { t: 'Antivibrador StringLab', id: 'antivibrador-stringlab' }] }
+    ] }
+  ];
+  var HELP_ITEMS = ['Dúvidas gerais', 'Entregas', 'Pedidos', 'Devoluções', 'Pagamentos', 'Produtos', 'Fale conosco', 'Relatar problema'];
+
+  function hotLinkHref(l) { return l.id ? '#/produto/' + l.id : '#/produtos/' + l.cat; }
+
+  function mostSearched() {
+    var cur = state.hotTab;
+    var tabs = HOT_TABS.map(function (t) {
+      var on = t.key === cur;
+      return '<button type="button" class="hot-tab" role="tab" id="hot-tab-' + t.key + '" aria-controls="hot-panel-' + t.key + '" aria-selected="' + on + '" tabindex="' + (on ? 0 : -1) + '" data-action="hot-tab" data-tab="' + t.key + '">' + t.label + '</button>';
+    }).join('');
+    var panels = HOT_TABS.map(function (t) {
+      return '<div class="hot-cols" role="tabpanel" id="hot-panel-' + t.key + '" aria-labelledby="hot-tab-' + t.key + '"' + (t.key === cur ? '' : ' hidden') + '>' +
+        t.cols.map(function (c) {
+          return '<div class="hot-col"><h3>' + c.title + '</h3><ul>' + c.links.map(function (l) {
+            return '<li><a href="' + hotLinkHref(l) + '">' + escapeHtml(l.t) + '</a></li>';
+          }).join('') + '</ul></div>';
+        }).join('') + '</div>';
+    }).join('');
+    return '<section class="hot" aria-labelledby="hot-title"><div class="hot-inner">' +
+      '<h2 id="hot-title">Produtos mais buscados</h2>' +
+      '<div class="hot-tabs" role="tablist" aria-label="Categorias dos produtos mais buscados">' + tabs + '</div>' +
+      panels +
+    '</div></section>';
+  }
+
+  // Imperative on purpose (like the menu accordion): no render(), so the page doesn't jump and focus is kept.
+  function selectHotTab(key, focus) {
+    state.hotTab = key;
+    Array.prototype.forEach.call(document.querySelectorAll('.hot-tab'), function (b) {
+      var on = b.getAttribute('data-tab') === key;
+      b.setAttribute('aria-selected', String(on));
+      b.tabIndex = on ? 0 : -1;
+      if (on && focus) b.focus();
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.hot-cols'), function (p) {
+      p.hidden = p.id !== 'hot-panel-' + key;
+    });
+  }
+
+  // About pages (#/sobre/<slug>). Paragraphs are separated by a blank line.
+  var ABOUT_PAGES = {
+    'proposito': { title: 'Nosso propósito', text:
+      'A AcePlace nasceu de uma constatação: encontrar equipamento de tênis de qualidade no Brasil ainda é difícil, caro e fragmentado entre lojas físicas e sites que não entendem o esporte.\n\n' +
+      'Reunimos em um só lugar três marcas pensadas especificamente para quem joga: a StringLab, focada em raquetes e encordoamento de alta performance; a CourtWear, com roupas técnicas para treino e jogo; e a MatchStep, dedicada a calçados desenvolvidos para quadra.\n\n' +
+      'Nosso propósito é simples: tornar o equipamento certo acessível para todo tipo de jogador, do iniciante que está comprando a primeira raquete ao competidor que já sabe exatamente o que precisa.' },
+    'quem-somos': { title: 'Quem somos', text:
+      'A AcePlace é um marketplace especializado 100% em tênis. Não vendemos de tudo — vendemos bem o que interessa para quem joga.\n\n' +
+      'Cada categoria do nosso catálogo foi construída com atenção aos detalhes que fazem diferença em quadra: o toque de uma raquete bem encordoada, o caimento de uma camiseta que não pesa no treino e a aderência de um tênis pensado para saibro e piso rápido.\n\n' +
+      'Este projeto foi desenvolvido como parte da disciplina de E-Commerce & Canais Digitais de Venda Direta, na Link School of Business, com o objetivo de aplicar na prática os conceitos de marketplace, experiência de compra e canais digitais de venda.' },
+    'sustentabilidade': { title: 'Sustentabilidade', text:
+      'Acreditamos que equipamento bom é equipamento que dura. Por isso, incentivamos o reencordoamento de raquetes em vez da troca, oferecemos overgrips e antivibradores avulsos para prolongar a vida útil dos produtos, e buscamos fornecedores que utilizem embalagens recicláveis em toda a nossa cadeia.\n\n' +
+      'Ainda estamos no início dessa jornada, mas cada escolha de fornecedor e cada produto colocado no catálogo passa por essa pergunta: isso vai durar, ou vai virar lixo rápido demais?' }
+  };
+
+  function viewAbout(slug) {
+    var page = ABOUT_PAGES[slug];
+    if (!page) return viewHome();
+    return '<article class="about">' +
+      '<h1 class="reveal">' + escapeHtml(page.title) + '</h1>' +
+      page.text.split('\n\n').map(function (para, i) { return '<p class="reveal" style="--i:' + (i + 1) + '">' + escapeHtml(para) + '</p>'; }).join('') +
+    '</article>';
+  }
+
   function footer() {
     return '' +
-    '<footer class="site">' +
-      '<span class="brand">AcePlace</span>' +
-      '<span class="tag">Marketplace de produtos do esporte tênis</span>' +
-    '</footer>';
+    mostSearched() +
+    '<footer class="site"><div class="foot-inner">' +
+      '<div><span class="brand">AcePlace</span><span class="tag">Marketplace de produtos do esporte tênis</span></div>' +
+      '<div class="foot-col"><h3>Ajuda</h3><ul>' + HELP_ITEMS.map(function (t) { return '<li class="static">' + t + '</li>'; }).join('') + '</ul></div>' +
+      '<div class="foot-col"><h3>Sobre a AcePlace</h3><ul>' +
+        '<li><a href="#/sobre/proposito">Propósito</a></li>' +
+        '<li><a href="#/sobre/quem-somos">Quem somos</a></li>' +
+        '<li><a href="#/sobre/sustentabilidade">Sustentabilidade</a></li>' +
+        '<li class="static">Trabalhe conosco</li>' +
+      '</ul></div>' +
+    '</div></footer>';
   }
 
   // Home content. AMBIENT_PHOTOS maps a shop category to up to 3 lifestyle photos (data URIs):
@@ -1741,6 +1858,7 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     if (clean === '/carrinho') return { name: 'cart' };
     if (clean === '/checkout') return { name: 'checkout' };
     if (clean === '/cadastro') return { name: 'signup' };
+    if (clean.indexOf('/sobre/') === 0) return { name: 'about', page: clean.slice('/sobre/'.length) };
     return { name: 'home' };
   }
 
@@ -1784,6 +1902,7 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     else if (route.name === 'cart') body = viewCart();
     else if (route.name === 'checkout') body = viewCheckout();
     else if (route.name === 'signup') body = viewSignup();
+    else if (route.name === 'about') body = viewAbout(route.page);
     else body = viewHome();
 
     document.getElementById('app').innerHTML = header() + '<main>' + body + '</main>' + footer();
@@ -1842,6 +1961,8 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
       state.sizeSel = {};
       state.sizeError = null;
       if (action === 'add-to-cart') render();
+    } else if (action === 'hot-tab') {
+      selectHotTab(el.getAttribute('data-tab'), false);
     } else if (action === 'select-size') {
       state.sizeSel[id] = el.getAttribute('data-size');
       if (state.sizeError === id) state.sizeError = null;
@@ -1993,6 +2114,16 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
   });
 
   document.getElementById('app').addEventListener('keydown', function (e) {
+    if (e.target && e.target.classList && e.target.classList.contains('hot-tab')) {
+      // Tabs keyboard support: arrows move between tabs (activating them), Home/End jump to the first/last.
+      var keys = HOT_TABS.map(function (t) { return t.key; }), i = keys.indexOf(e.target.getAttribute('data-tab')), j = -1;
+      if (e.key === 'ArrowRight') j = (i + 1) % keys.length;
+      else if (e.key === 'ArrowLeft') j = (i - 1 + keys.length) % keys.length;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = keys.length - 1;
+      if (j > -1) { e.preventDefault(); selectHotTab(keys[j], true); }
+      return;
+    }
     if (e.key !== 'Enter' || !e.target || e.target.id !== 'cupom-checkout') return;
     e.preventDefault();
     var btn = document.querySelector('[data-action="apply-coupon-checkout"]');
