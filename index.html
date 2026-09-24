@@ -896,9 +896,12 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
   var SHIPPING_FLAT = 19.90;
 
   // Checkout benefit tiers, by product subtotal (before coupon and shipping). `min` is inclusive.
+  // Like the viseira below, "frete grátis" here is only announced: it does not change the actual shipping charged
+  // (that stays driven by SHIPPING_FLAT / COUPON_FREE_SHIPPING). `tag` is the one-word headline used once this
+  // tier is reached but another remains (e.g. "Frete grátis garantido! Faltam R$X para ganhar ...!").
   var BENEFIT_TIERS = [
-    { min: 350, name: 'Viseira Court Basic de brinde', short: 'uma viseira Court Basic de brinde' },
-    { min: 500, name: 'Aula experimental de tênis em uma arena parceira próxima', short: 'uma aula experimental de tênis' }
+    { min: 250, name: 'Frete grátis para compras acima de R$ 250,00 — válido a partir da sua 2ª compra', short: 'frete grátis a partir da sua 2ª compra', tag: 'Frete grátis garantido!' },
+    { min: 350, name: 'Viseira Court Basic de brinde', short: 'uma viseira Court Basic de brinde', tag: 'Viseira garantida!' }
   ];
 
 
@@ -917,6 +920,22 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
     try { window.localStorage.setItem(REVIEWS_KEY, JSON.stringify(state.reviews)); } catch (e) {}
   }
 
+  // The cart persists across reloads. There is no seed/demo data: a fresh visit with nothing saved starts empty.
+  var CART_KEY = 'aceplace.cart';
+
+  function loadCart() {
+    try {
+      var saved = JSON.parse(window.localStorage.getItem(CART_KEY));
+      return saved && typeof saved === 'object' && !Array.isArray(saved) ? saved : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveCart() {
+    try { window.localStorage.setItem(CART_KEY, JSON.stringify(state.cart)); } catch (e) {}
+  }
+
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -924,11 +943,7 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
   }
 
   var state = {
-    cart: {
-      'overgrip-stringlab': 1,
-      'camiseta-dryfit-masculina|M': 2,
-      'tenis-matchstep-masculino|42': 1
-    },
+    cart: loadCart(),
     wishlist: {},
     coupon: null,
     couponMessage: '',
@@ -1588,7 +1603,7 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     var money = function (cents) { return fmtBRL(cents / 100); };
     if (b.cents <= 0) headline = 'Compre acima de ' + fmtBRL(BENEFIT_TIERS[0].min) + ' e ganhe ' + BENEFIT_TIERS[0].short + '. Acima de ' + fmtBRL(top) + ', ganhe também ' + BENEFIT_TIERS[1].short + '.';
     else if (b.reached === 0) headline = 'Faltam ' + money(b.remaining) + ' para ganhar ' + BENEFIT_TIERS[0].short + '!';
-    else if (b.reached < BENEFIT_TIERS.length) headline = 'Viseira garantida! Faltam ' + money(b.remaining) + ' para ganhar ' + b.next.short + '!';
+    else if (b.reached < BENEFIT_TIERS.length) headline = BENEFIT_TIERS[b.reached - 1].tag + ' Faltam ' + money(b.remaining) + ' para ganhar ' + b.next.short + '!';
     else headline = 'Parabéns! Você desbloqueou os dois benefícios: ' + BENEFIT_TIERS[0].short + ' e ' + BENEFIT_TIERS[1].short + '.';
     var pct = Math.min(100, b.cents / (top * 100) * 100);
     var marks = BENEFIT_TIERS.map(function (t, i) {
@@ -1961,6 +1976,7 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
       state.pqty = 1;
       state.sizeSel = {};
       state.sizeError = null;
+      saveCart();
       if (action === 'add-to-cart') render();
     } else if (action === 'hot-tab') {
       selectHotTab(el.getAttribute('data-tab'), false);
@@ -2011,12 +2027,15 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
       if (cagain) cagain.focus();
     } else if (action === 'cart-inc') {
       state.cart[id] = (state.cart[id] || 0) + 1;
+      saveCart();
       render();
     } else if (action === 'cart-dec') {
       state.cart[id] = Math.max(1, (state.cart[id] || 1) - 1);
+      saveCart();
       render();
     } else if (action === 'cart-remove') {
       delete state.cart[id];
+      saveCart();
       render();
     } else if (action === 'go-checkout') {
       window.location.hash = '#/checkout';
