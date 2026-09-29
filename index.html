@@ -427,6 +427,36 @@
   .tier.done .tier-ico { background: var(--accent); border-color: var(--accent); color: #fff; }
   .tier.next { border-style: dashed; border-color: var(--accent); }
   .benefit-note { margin: 0; font-size: 11px; color: var(--muted); }
+  .test-note { margin: 0; font-size: 12px; line-height: 1.4; color: var(--muted); text-align: center; }
+
+  /* Promo pop-up (kit with 10% off), shown once per session on the home page. */
+  .promo-modal { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; padding: 16px; animation: promo-fade .25s ease both; }
+  .promo-dialog { position: relative; width: 100%; max-width: 560px; max-height: calc(100vh - 32px); overflow-y: auto; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 28px 28px 24px; box-shadow: 0 24px 60px rgba(0,0,0,0.35); animation: promo-pop .3s ease both; }
+  @keyframes promo-fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes promo-pop { from { opacity: 0; transform: translateY(12px) scale(.97); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .promo-modal, .promo-dialog { animation: none; } }
+  .promo-close { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); color: var(--muted); display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; }
+  .promo-close:hover { color: var(--text); border-color: var(--text); }
+  .promo-kicker { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .promo-title { margin: 6px 40px 6px 0; font-family: 'Archivo', sans-serif; font-size: 26px; line-height: 1.15; }
+  .promo-sub { margin: 0 0 16px; font-size: 14px; color: var(--muted); }
+  .promo-items { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .promo-item { display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 12px; padding: 8px; border: 1px solid var(--border); border-radius: 8px; }
+  .promo-thumb { width: 52px; height: 52px; background: #FFFFFF; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .promo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .promo-thumb img.cutout { object-fit: contain; }
+  .promo-name { font-size: 14px; font-weight: 600; line-height: 1.3; }
+  .promo-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-top: 4px; font-size: 13px; color: var(--muted); }
+  .promo-select { font: inherit; font-size: 13px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 4px; background: var(--card); color: var(--text); }
+  .promo-select[aria-invalid="true"] { border-color: var(--danger); }
+  .promo-price { font-size: 14px; font-weight: 600; white-space: nowrap; }
+  .promo-totals { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-bottom: 4px; }
+  .promo-was { color: var(--muted); text-decoration: line-through; font-size: 15px; }
+  .promo-now { font-family: 'Archivo', sans-serif; font-size: 28px; font-weight: 800; color: var(--price); }
+  .promo-save { margin: 0 0 14px; font-size: 13px; color: var(--muted); }
+  .promo-error { min-height: 18px; margin: 0 0 8px; font-size: 13px; color: var(--danger); }
+  .promo-dialog .btn-primary { width: 100%; }
+  @media (max-width: 480px) { .promo-dialog { padding: 22px 16px 18px; } .promo-title { font-size: 22px; } .promo-item { grid-template-columns: 44px 1fr; } .promo-thumb { width: 44px; height: 44px; } .promo-price { grid-column: 2; } }
   .summary-row { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); }
   .summary-total { border-top: 1px solid var(--border); padding-top: 14px; display: flex; justify-content: space-between; font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 17px; }
 
@@ -523,7 +553,7 @@
       id: 'camiseta-dryfit-feminina', seller: 'CourtWear', name: 'Camiseta Dry-Fit Court — Feminina', tag: 'Feminino',
       price: 129.90, shipping: 12.90,
       description: 'Camiseta técnica em modelagem feminina, tecido dry-fit com ventilação lateral, feita para longas sessões de treino ou jogo.',
-      specs: ['Tecido: 100% poliéster dry-fit', 'Tamanhos: PP ao G', 'Prazo: envio em até 3 dias úteis']
+      specs: ['Tecido: 100% poliéster dry-fit', 'Tamanhos: P ao GG', 'Prazo: envio em até 3 dias úteis']
     },
     'shorts-masculino': {
       id: 'shorts-masculino', seller: 'CourtWear', name: 'Shorts CourtWear — Masculino', tag: 'Masculino',
@@ -535,7 +565,7 @@
       id: 'shorts-feminino', seller: 'CourtWear', name: 'Shorts CourtWear — Feminino', tag: 'Feminino',
       price: 119.90, shipping: 12.90,
       description: 'Shorts técnico em modelagem feminina, com forro interno e bolso para bolinha.',
-      specs: ['Tecido: poliéster leve', 'Tamanhos: PP ao G', 'Prazo: envio em até 3 dias úteis']
+      specs: ['Tecido: poliéster leve', 'Tamanhos: P ao GG', 'Prazo: envio em até 3 dias úteis']
     },
     'viseira-court-basic': {
       id: 'viseira-court-basic', seller: 'CourtWear', name: 'Viseira Court Basic', tag: 'Unissex',
@@ -893,15 +923,16 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
   var COUPONS = { 'TENIS10': 0.10 };
   // "Primeira compra" is modelled by the coupon (there are no accounts or order history): TENIS10 = 10% off + free shipping.
   var COUPON_FREE_SHIPPING = { 'TENIS10': true };
-  var SHIPPING_FLAT = 19.90;
 
   // Checkout benefit tiers, by product subtotal (before coupon and shipping). `min` is inclusive.
-  // Like the viseira below, "frete grátis" here is only announced: it does not change the actual shipping charged
-  // (that stays driven by SHIPPING_FLAT / COUPON_FREE_SHIPPING). `tag` is the one-word headline used once this
+  // Both rewards have a real effect on the checkout summary (see checkoutShipping() and GIFT_PRODUCT_ID):
+  // 'frete' zeroes the shipping only when the browser already has a previous order (simulated, see hasPreviousOrder()),
+  // 'brinde' adds the free viseira line. `tag` is the one-word headline used once this
   // tier is reached but another remains (e.g. "Frete grátis garantido! Faltam R$X para ganhar ...!").
+  var GIFT_PRODUCT_ID = 'viseira-court-basic';
   var BENEFIT_TIERS = [
-    { min: 250, name: 'Frete grátis para compras acima de R$ 250,00 — válido a partir da sua 2ª compra', short: 'frete grátis a partir da sua 2ª compra', tag: 'Frete grátis garantido!' },
-    { min: 350, name: 'Viseira Court Basic de brinde', short: 'uma viseira Court Basic de brinde', tag: 'Viseira garantida!' }
+    { id: 'frete', min: 250, name: 'Frete grátis para compras acima de R$ 250,00 — válido a partir da sua 2ª compra', short: 'frete grátis a partir da sua 2ª compra', tag: 'Frete grátis garantido!' },
+    { id: 'brinde', min: 350, name: 'Viseira Court Basic de brinde', short: 'uma viseira Court Basic de brinde', tag: 'Viseira garantida!' }
   ];
 
 
@@ -934,6 +965,69 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
 
   function saveCart() {
     try { window.localStorage.setItem(CART_KEY, JSON.stringify(state.cart)); } catch (e) {}
+    // Every cart mutation lands here, so this is where the kit offer is trimmed to the complete kits still in the cart.
+    state.kitOffer = kitCount();
+    saveKit();
+  }
+
+  // ---- Kit promo (pop-up on the home page): 5 fixed products, 10% off the sum of one unit of each per kit.
+  // The discount lives outside the cart lines: `state.kitOffer` = kits added through the pop-up (persisted with the cart),
+  // and only complete kits still in the cart count (remove the sneakers and the discount is gone). It is independent
+  // of the TENIS10 coupon; the coupon is then applied on the price already reduced by the kit (see cartDiscounts()).
+  var KIT_ITEMS = ['raquete-tour-100', 'camiseta-dryfit-masculina', 'shorts-masculino', 'tenis-matchstep-masculino', 'meia-esportiva-cano-alto'];
+  var KIT_DISCOUNT = 0.10;
+  var KIT_KEY = 'aceplace.kit';
+  var PROMO_SEEN_KEY = 'aceplace.kitPromoSeen'; // sessionStorage: the pop-up shows once per browser session
+
+  function loadKit() {
+    try {
+      var n = parseInt(window.localStorage.getItem(KIT_KEY), 10);
+      return n > 0 ? n : 0;
+    } catch (e) { return 0; }
+  }
+
+  function saveKit() {
+    try { window.localStorage.setItem(KIT_KEY, String(state.kitOffer)); } catch (e) {}
+  }
+
+  function promoSeen() {
+    try { return !!window.sessionStorage.getItem(PROMO_SEEN_KEY); } catch (e) { return false; }
+  }
+
+  function markPromoSeen() {
+    try { window.sessionStorage.setItem(PROMO_SEEN_KEY, '1'); } catch (e) {}
+  }
+
+  function kitPriceCents() {
+    var c = 0;
+    KIT_ITEMS.forEach(function (id) { c += Math.round(PRODUCTS[id].price * 100); });
+    return c;
+  }
+
+  function kitDiscountCents() { return Math.round(kitPriceCents() * KIT_DISCOUNT); }
+
+  // Complete kits in the cart: the offer, capped by the smallest quantity (all sizes together) of any kit product.
+  function kitCount() {
+    var min = Infinity;
+    KIT_ITEMS.forEach(function (id) {
+      var n = 0, key;
+      for (key in state.cart) if (splitKey(key).id === id) n += state.cart[key];
+      min = Math.min(min, n);
+    });
+    return Math.min(state.kitOffer || 0, min);
+  }
+
+  // PROTOTYPE SIMULATION of "2ª compra em diante": there are no accounts, so we only remember, in this browser's
+  // localStorage, that an order was finalized here before. This is NOT a real user/account check: another browser,
+  // a cleared storage or a different person on the same browser gives a different answer.
+  var ORDER_PLACED_KEY = 'aceplace.orderPlaced';
+
+  function hasPreviousOrder() {
+    try { return !!window.localStorage.getItem(ORDER_PLACED_KEY); } catch (e) { return false; }
+  }
+
+  function markOrderPlaced() {
+    try { window.localStorage.setItem(ORDER_PLACED_KEY, new Date().toISOString()); } catch (e) {}
   }
 
   function escapeHtml(s) {
@@ -944,6 +1038,9 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
 
   var state = {
     cart: loadCart(),
+    kitOffer: loadKit(),
+    promoOpen: false,
+    kitSizes: {},
     wishlist: {},
     coupon: null,
     couponMessage: '',
@@ -996,7 +1093,10 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
   }
 
   function fmtBRL(v) {
-    return 'R$ ' + v.toFixed(2).replace('.', ',');
+    // pt-BR: "." as thousands separator, "," as decimal separator (R$ 1.029,80). Done by hand rather than with
+    // toLocaleString so it does not depend on the browser's ICU/locale data.
+    var parts = Math.abs(v).toFixed(2).split('.');
+    return (v < 0 ? '-' : '') + 'R$ ' + parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + parts[1];
   }
 
   // Sizes. Only clothes and shoes have them (chosen on the product page). Clothes: P M G GG. Shoes: the range already
@@ -1024,6 +1124,12 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
     var s = 0;
     for (var key in state.cart) s += PRODUCTS[splitKey(key).id].price * state.cart[key];
     return s;
+  }
+
+  // Discounts on the product subtotal: the kit first, then the coupon on what is left (they stack independently).
+  function cartDiscounts(subtotal) {
+    var kit = kitCount() * kitDiscountCents() / 100;
+    return { kit: kit, coupon: state.coupon ? (subtotal - kit) * state.coupon : 0 };
   }
 
   function iconCart() {
@@ -1544,8 +1650,8 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
   function viewCart() {
     var ids = Object.keys(state.cart);
     var subtotal = cartSubtotal();
-    var discount = state.coupon ? subtotal * state.coupon : 0;
-    var total = subtotal - discount;
+    var disc = cartDiscounts(subtotal), discount = disc.coupon, kitOff = disc.kit;
+    var total = subtotal - kitOff - discount;
     return '' +
     '<div class="cart-layout">' +
       '<div>' +
@@ -1566,6 +1672,7 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
       '<div class="card summary">' +
         '<h2 style="margin:0;font-size:17px;">Resumo do pedido</h2>' +
         '<div class="summary-row"><span>Subtotal (' + cartCount() + (cartCount() === 1 ? ' item' : ' itens') + ')</span><span>' + fmtBRL(subtotal) + '</span></div>' +
+        (kitOff > 0 ? '<div class="summary-row" style="color:var(--price);"><span>Desconto do kit (' + Math.round(KIT_DISCOUNT * 100) + '%)</span><span>-' + fmtBRL(kitOff) + '</span></div>' : '') +
         checkoutCouponField() +
         (state.coupon ? '<div class="summary-row" style="color:var(--price);"><span>Cupom (' + Math.round(state.coupon * 100) + '%)</span><span>-' + fmtBRL(discount) + '</span></div>' : '') +
         '<div class="summary-row"><span>Frete</span><span>Calculado no checkout</span></div>' +
@@ -1596,6 +1703,37 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     for (i = 0; i < BENEFIT_TIERS.length; i++) if (cents >= BENEFIT_TIERS[i].min * 100) reached = i + 1;
     var next = BENEFIT_TIERS[reached] || null;
     return { cents: cents, reached: reached, next: next, remaining: next ? next.min * 100 - cents : 0 };
+  }
+
+  // True when the product subtotal reached the tier with this id ('frete' | 'brinde'). Inclusive, in cents.
+  function tierReached(subtotal, id) {
+    var cents = Math.round(subtotal * 100), i;
+    for (i = 0; i < BENEFIT_TIERS.length; i++) if (BENEFIT_TIERS[i].id === id) return cents >= BENEFIT_TIERS[i].min * 100;
+    return false;
+  }
+
+  // Drop-ship: each brand (seller) ships its own package. A brand's package costs the highest `shipping` among its
+  // items in the cart (quantity does not matter: it is one package); if all of them ship free, the package is free.
+  // The order's shipping is the sum of the packages. Works in cents. The free gift is not counted (it is not in the cart).
+  function shippingPackages() {
+    var perSeller = {}, seller, total = 0, key, p, cents;
+    for (key in state.cart) {
+      p = PRODUCTS[splitKey(key).id];
+      cents = Math.round((p.shipping || 0) * 100);
+      if (!(p.seller in perSeller) || cents > perSeller[p.seller]) perSeller[p.seller] = cents;
+    }
+    for (seller in perSeller) total += perSeller[seller];
+    return { perSeller: perSeller, cents: total };
+  }
+
+  // Shipping charged at checkout: { amount (reais), reason }. `reason` says why it was waived, or null when it was not.
+  // A coupon with free shipping wins; otherwise the "frete" tier waives it only for a returning (simulated) customer.
+  function checkoutShipping(subtotal) {
+    var cents = shippingPackages().cents;
+    if (Object.keys(state.cart).length === 0) return { amount: 0, reason: null };
+    if (freeShippingApplied()) return { amount: 0, reason: 'cupom' };
+    if (tierReached(subtotal, 'frete') && hasPreviousOrder()) return { amount: 0, reason: '2ª compra' };
+    return { amount: cents / 100, reason: null };
   }
 
   function benefitBanner(subtotal) {
@@ -1649,10 +1787,11 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     }
     var ids = Object.keys(state.cart);
     var subtotal = cartSubtotal();
-    var discount = state.coupon ? subtotal * state.coupon : 0;
-    var free = freeShippingApplied();
-    var shipping = ids.length && !free ? SHIPPING_FLAT : 0;
-    var total = subtotal - discount + shipping;
+    var disc = cartDiscounts(subtotal), discount = disc.coupon, kitOff = disc.kit;
+    var ship = checkoutShipping(subtotal);
+    var shipping = ship.amount;
+    var gift = ids.length > 0 && tierReached(subtotal, 'brinde') ? PRODUCTS[GIFT_PRODUCT_ID] : null;
+    var total = subtotal - kitOff - discount + shipping;
     return '' +
     '<div class="checkout-layout">' +
       '<form id="checkout-form" class="form-block" novalidate>' +
@@ -1686,13 +1825,16 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
           var sk = splitKey(id), p = PRODUCTS[sk.id], qty = state.cart[id];
           return '<div class="summary-row"><span>' + p.name + (sk.size ? ' (Tamanho ' + escapeHtml(sk.size) + ')' : '') + (qty > 1 ? ' (x' + qty + ')' : '') + ' — ' + p.seller + '</span><span>' + fmtBRL(p.price * qty) + '</span></div>';
         }).join('')) +
+        (gift ? '<div class="summary-row"><span>' + gift.name + ' (x1) — ' + gift.seller + ' <strong style="color:var(--price);">Brinde</strong></span><span style="color:var(--price);">' + fmtBRL(0) + '</span></div>' : '') +
+        (kitOff > 0 ? '<div class="summary-row" style="color:var(--price);"><span>Desconto do kit (' + Math.round(KIT_DISCOUNT * 100) + '%)</span><span>-' + fmtBRL(kitOff) + '</span></div>' : '') +
         checkoutCouponField() +
         (state.coupon ? '<div class="summary-row" style="color:var(--price);"><span>Cupom</span><span>-' + fmtBRL(discount) + '</span></div>' : '') +
-        '<div class="summary-row"><span>Frete</span>' + (ids.length && free ? '<span style="color:var(--price);">Grátis (cupom)</span>' : '<span>' + (shipping > 0 ? fmtBRL(shipping) : '—') + '</span>') + '</div>' +
+        '<div class="summary-row"><span>Frete</span>' + (ids.length && ship.reason ? '<span style="color:var(--price);">Grátis (' + ship.reason + ')</span>' : '<span>' + (ids.length === 0 ? '—' : (shipping > 0 ? fmtBRL(shipping) : 'Grátis')) + '</span>') + '</div>' +
         '<div class="summary-total"><span>Total</span><span>' + fmtBRL(total) + '</span></div>' +
         (ids.length === 0
           ? '<button class="btn-primary" disabled>Finalizar pedido</button>'
-          : '<a id="finalizar-link" class="btn-primary" href="' + STRIPE_PAYMENT_LINK + '" target="_blank" rel="noopener noreferrer">Finalizar pedido</a>') +
+          : '<a id="finalizar-link" class="btn-primary" href="' + STRIPE_PAYMENT_LINK + '" target="_blank" rel="noopener noreferrer">Finalizar pedido</a>' +
+            '<p class="test-note" role="note">Ambiente de teste — o valor cobrado é fixo para fins de demonstração e não reflete o total exibido acima.</p>') +
       '</div>' +
       '</div>' +
     '</div>';
@@ -1904,11 +2046,60 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     els.forEach(function (el) { revealObserver.observe(el); });
   }
 
+  // Kit promo pop-up. It lives inside #app (so the delegated listeners reach it); state.promoOpen keeps it open across
+  // re-renders. Sizes are picked in the pop-up for the products that have them (same options as the product page).
+  function promoModal() {
+    var full = kitPriceCents() / 100, off = kitDiscountCents() / 100, pct = Math.round(KIT_DISCOUNT * 100);
+    var items = KIT_ITEMS.map(function (id) {
+      var p = PRODUCTS[id], sizes = sizeOptions(p), sel = state.kitSizes[id] || '';
+      var picker = sizes.length
+        ? '<label class="promo-size">Tamanho <select class="promo-select" data-kit-size="' + id + '" aria-label="Tamanho — ' + escapeHtml(p.name) + '">' +
+            '<option value="">Escolher</option>' +
+            sizes.map(function (s) { return '<option value="' + escapeHtml(s) + '"' + (s === sel ? ' selected' : '') + '>' + escapeHtml(s) + '</option>'; }).join('') +
+          '</select></label>'
+        : '';
+      return '<li class="promo-item">' +
+        '<div class="promo-thumb">' + smallVisual(id, 52) + '</div>' +
+        '<div><div class="promo-name">' + p.name + '</div>' + (picker ? '<div class="promo-meta">' + picker + '</div>' : '') + '</div>' +
+        '<div class="promo-price">' + fmtBRL(p.price) + '</div>' +
+      '</li>';
+    }).join('');
+    return '<div class="promo-modal" id="promo-modal">' +
+      '<div class="promo-dialog" role="dialog" aria-modal="true" aria-labelledby="promo-title">' +
+        '<button type="button" class="promo-close" data-action="promo-close" aria-label="Fechar">' + iconClose() + '</button>' +
+        '<div class="promo-kicker">Oferta especial</div>' +
+        '<h2 class="promo-title" id="promo-title">Kit completo com ' + pct + '% de desconto</h2>' +
+        '<p class="promo-sub">Raquete, roupa, tênis e meia para entrar em quadra prontos. Escolha os tamanhos e leve tudo com desconto.</p>' +
+        '<ul class="promo-items">' + items + '</ul>' +
+        '<div class="promo-totals"><span class="promo-was" aria-label="Preço original">' + fmtBRL(full) + '</span><span class="promo-now" aria-label="Preço com desconto">' + fmtBRL(full - off) + '</span></div>' +
+        '<p class="promo-save">Você economiza ' + fmtBRL(off) + ' (' + pct + '%). Vale junto com o cupom TENIS10.</p>' +
+        '<p class="promo-error" id="promo-error" role="alert"></p>' +
+        '<button type="button" class="btn-primary" data-action="promo-add-kit">Adicionar kit ao carrinho</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function closePromo() {
+    state.promoOpen = false;
+    render();
+  }
+
+  // Locks page scroll while the pop-up is open and moves focus into it.
+  function syncPromo() {
+    document.body.style.overflow = state.promoOpen ? 'hidden' : '';
+    if (!state.promoOpen) return;
+    var dlg = document.querySelector('.promo-dialog');
+    if (dlg && !dlg.contains(document.activeElement)) { var first = dlg.querySelector('.promo-close'); if (first) first.focus(); }
+  }
+
   function render() {
     var route = parseRoute();
     var routeKey = JSON.stringify(route);
     var routeChanged = routeKey !== lastRouteKey;
     lastRouteKey = routeKey;
+    // The kit pop-up opens on the first home view of the browser session (sessionStorage) and closes on any other route.
+    if (route.name !== 'home') state.promoOpen = false;
+    else if (!promoSeen()) { state.promoOpen = true; markPromoSeen(); }
     if (routeChanged) { state.activePhotoIndex = 0; state.signedUp = null; state.checkoutCouponInput = ''; state.checkoutCouponError = ''; state.sizeSel = {}; state.sizeError = null; }
     var body;
     if (route.name === 'product') body = viewProduct(route.id);
@@ -1921,7 +2112,8 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     else if (route.name === 'about') body = viewAbout(route.page);
     else body = viewHome();
 
-    document.getElementById('app').innerHTML = header() + '<main>' + body + '</main>' + footer();
+    document.getElementById('app').innerHTML = header() + '<main>' + body + '</main>' + footer() + (state.promoOpen ? promoModal() : '');
+    syncPromo();
 
     var isAnchor = window.location.hash.indexOf('#/#') === 0;
     if (routeChanged && !isAnchor) window.scrollTo(0, 0);
@@ -1934,6 +2126,9 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
         if (!form.checkValidity()) {
           e.preventDefault();
           form.reportValidity();
+        } else {
+          // Order finalized: remember it (prototype simulation of a returning customer, see hasPreviousOrder()).
+          markOrderPlaced();
         }
       });
     }
@@ -1947,6 +2142,8 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
   }
 
   document.getElementById('app').addEventListener('click', function (e) {
+    // A click on the dark backdrop (not on the dialog) closes the kit pop-up without adding anything.
+    if (e.target.id === 'promo-modal') { closePromo(); return; }
     // Any link inside the side menu closes it. If the link points at the current page there is no hashchange, so re-render.
     var menuLink = e.target.closest('.menu-panel a');
     if (menuLink) {
@@ -1978,6 +2175,29 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
       state.sizeError = null;
       saveCart();
       if (action === 'add-to-cart') render();
+    } else if (action === 'promo-close') {
+      closePromo();
+    } else if (action === 'promo-add-kit') {
+      var missing = KIT_ITEMS.filter(function (kid) { return sizeOptions(PRODUCTS[kid]).length > 0 && !state.kitSizes[kid]; });
+      if (missing.length) {
+        // No re-render: it would replace the dialog and lose the selects' focus.
+        document.getElementById('promo-error').textContent = 'Escolha o tamanho: ' + missing.map(function (kid) { return PRODUCTS[kid].name; }).join(', ') + '.';
+        missing.forEach(function (kid) {
+          var sel = document.querySelector('[data-kit-size="' + kid + '"]');
+          if (sel) sel.setAttribute('aria-invalid', 'true');
+        });
+        var firstMissing = document.querySelector('[data-kit-size="' + missing[0] + '"]');
+        if (firstMissing) firstMissing.focus();
+        return;
+      }
+      KIT_ITEMS.forEach(function (kid) {
+        var k = cartKey(kid, sizeOptions(PRODUCTS[kid]).length ? state.kitSizes[kid] : '');
+        state.cart[k] = (state.cart[k] || 0) + 1;
+      });
+      state.kitOffer = (state.kitOffer || 0) + 1;
+      state.kitSizes = {};
+      saveCart();
+      closePromo();
     } else if (action === 'hot-tab') {
       selectHotTab(el.getAttribute('data-tab'), false);
     } else if (action === 'select-size') {
@@ -2134,6 +2354,19 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
   });
 
   document.getElementById('app').addEventListener('keydown', function (e) {
+    if (state.promoOpen) {
+      // Kit pop-up: Esc closes it, Tab stays inside the dialog.
+      if (e.key === 'Escape') { e.preventDefault(); closePromo(); return; }
+      if (e.key === 'Tab') {
+        var f = Array.prototype.slice.call(document.querySelectorAll('.promo-dialog button, .promo-dialog select'));
+        if (f.length) {
+          var at = f.indexOf(document.activeElement);
+          if (e.shiftKey && at <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+          else if (!e.shiftKey && at === f.length - 1) { e.preventDefault(); f[0].focus(); }
+        }
+        return;
+      }
+    }
     if (e.target && e.target.classList && e.target.classList.contains('hot-tab')) {
       // Tabs keyboard support: arrows move between tabs (activating them), Home/End jump to the first/last.
       var keys = HOT_TABS.map(function (t) { return t.key; }), i = keys.indexOf(e.target.getAttribute('data-tab')), j = -1;
@@ -2161,6 +2394,16 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     }
     var field = e.target.getAttribute('data-review-field');
     if (field) reviewDraft(e.target.getAttribute('data-id'))[field] = e.target.value;
+  });
+
+  // Size picked in the kit pop-up. Stored in state only (no re-render), so the dialog and its focus stay put.
+  document.getElementById('app').addEventListener('change', function (e) {
+    var kid = e.target && e.target.getAttribute && e.target.getAttribute('data-kit-size');
+    if (!kid) return;
+    state.kitSizes[kid] = e.target.value;
+    e.target.removeAttribute('aria-invalid');
+    var box = document.getElementById('promo-error');
+    if (box) box.textContent = '';
   });
 
   function applyCategoryFromHash() {
