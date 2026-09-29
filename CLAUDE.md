@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-AcePlace is a tennis marketplace (university project, UI in pt-BR). The entire app is a single file, `index.html` (~1.6MB, ~1370 lines): no build step, no package manager, no tests, no linter, not a git repo. To run it, open `index.html` in a browser (or `python3 -m http.server` in this directory). Google Fonts is loaded from the network; everything else is inline.
+AcePlace is a tennis marketplace (university project, UI in pt-BR). The entire app is a single file, `index.html` (~1.6MB, ~1370 lines): no build step, no package manager, no tests, no linter, not a git repo. To run it, open `index.html` in a browser (or `python3 -m http.server` in this directory). Google Fonts and the Google Analytics tag (`gtag.js`, id `G-R4D80JB8TP`, a small extra `<script>` in `<head>` before the app's one) are loaded from the network; everything else is inline. When extracting the app script for tests, take the big IIFE `<script>` (the last one), not the first `<script>` in the file.
 
 ## Reading and editing `index.html`
 
