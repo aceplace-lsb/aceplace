@@ -3,6 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-R4D80JB8TP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  // send_page_view is off: the app is a hash-routed SPA, so it sends its own page_view on every route change (trackPageView()).
+  gtag('config', 'G-R4D80JB8TP', { send_page_view: false });
+</script>
 <title>AcePlace — Marketplace de Tênis</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎾</text></svg>">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Work+Sans:wght@400;500;600&display=swap">
@@ -2093,6 +2102,15 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     if (dlg && !dlg.contains(document.activeElement)) { var first = dlg.querySelector('.promo-close'); if (first) first.focus(); }
   }
 
+  // Google Analytics page_view for the SPA. Called by render() only when the route changed (not on same-route re-renders
+  // such as add-to-cart), so each real navigation counts once. page_path is the hash route without the "#" or any
+  // "#/#anchor" part, e.g. "/produto/raquete-tour-100". Routes carry no personal data. No-op if gtag is missing.
+  function trackPageView() {
+    if (typeof window.gtag !== 'function') return;
+    var path = (window.location.hash.replace(/^#/, '') || '/').split('#')[0] || '/';
+    window.gtag('event', 'page_view', { page_path: path, page_location: window.location.href, page_title: document.title });
+  }
+
   function render() {
     var route = parseRoute();
     var routeKey = JSON.stringify(route);
@@ -2119,6 +2137,7 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     var isAnchor = window.location.hash.indexOf('#/#') === 0;
     if (routeChanged && !isAnchor) window.scrollTo(0, 0);
     setupReveal(routeChanged);
+    if (routeChanged) trackPageView();
 
     var form = document.getElementById('checkout-form');
     var finalizarLink = document.getElementById('finalizar-link');
