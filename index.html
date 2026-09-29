@@ -429,7 +429,7 @@
   .benefit-note { margin: 0; font-size: 11px; color: var(--muted); }
   .test-note { margin: 0; font-size: 12px; line-height: 1.4; color: var(--muted); text-align: center; }
 
-  /* Promo pop-up (kit with 10% off), shown once per session on the home page. */
+  /* Promo pop-up (kit with 15% off), shown once per session on the home page. */
   .promo-modal { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; padding: 16px; animation: promo-fade .25s ease both; }
   .promo-dialog { position: relative; width: 100%; max-width: 560px; max-height: calc(100vh - 32px); overflow-y: auto; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 12px; padding: 28px 28px 24px; box-shadow: 0 24px 60px rgba(0,0,0,0.35); animation: promo-pop .3s ease both; }
   @keyframes promo-fade { from { opacity: 0; } to { opacity: 1; } }
@@ -633,7 +633,7 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
       'shorts-feminino': L('shorts', ['courtwear_womens_skort_front']),
       'viseira-court-basic': L('viseira', ['court_basic_visor_front', 'court_basic_visor_lifestyle']),
       'tenis-matchstep-masculino': shoes,
-      'tenis-matchstep-feminino': shoes.slice(),
+      'tenis-matchstep-feminino': L('tenis-feminino', ['tenis_feminino_side', 'tenis_feminino_lifestyle']),
       'meia-esportiva-cano-alto': L('meia', ['stringlab_high_cut_socks_texture', 'stringlab_high_cut_socks_worn_studio', 'stringlab_high_cut_socks_lifestyle'])
     };
   })();
@@ -970,12 +970,12 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
     saveKit();
   }
 
-  // ---- Kit promo (pop-up on the home page): 5 fixed products, 10% off the sum of one unit of each per kit.
+  // ---- Kit promo (pop-up on the home page): 5 fixed products, KIT_DISCOUNT (15%) off the sum of one unit of each per kit.
   // The discount lives outside the cart lines: `state.kitOffer` = kits added through the pop-up (persisted with the cart),
   // and only complete kits still in the cart count (remove the sneakers and the discount is gone). It is independent
   // of the TENIS10 coupon; the coupon is then applied on the price already reduced by the kit (see cartDiscounts()).
   var KIT_ITEMS = ['raquete-tour-100', 'camiseta-dryfit-masculina', 'shorts-masculino', 'tenis-matchstep-masculino', 'meia-esportiva-cano-alto'];
-  var KIT_DISCOUNT = 0.10;
+  var KIT_DISCOUNT = 0.15;
   var KIT_KEY = 'aceplace.kit';
   var PROMO_SEEN_KEY = 'aceplace.kitPromoSeen'; // sessionStorage: the pop-up shows once per browser session
 
@@ -1004,7 +1004,8 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
     return c;
   }
 
-  function kitDiscountCents() { return Math.round(kitPriceCents() * KIT_DISCOUNT); }
+  // Integer percent (15) so that half-cent cases round predictably (152450 * 15 / 100 = 22867.5 -> 22868), unlike 0.15 * 152450.
+  function kitDiscountCents() { return Math.round(kitPriceCents() * Math.round(KIT_DISCOUNT * 100) / 100); }
 
   // Complete kits in the cart: the offer, capped by the smallest quantity (all sizes together) of any kit product.
   function kitCount() {
