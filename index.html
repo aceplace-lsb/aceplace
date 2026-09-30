@@ -934,14 +934,12 @@ var PRODUCT_PHOTOS = {"tenis-matchstep-feminino": ["data:image/jpeg;base64,/9j/4
   var COUPON_FREE_SHIPPING = { 'TENIS10': true };
 
   // Checkout benefit tiers, by product subtotal (before coupon and shipping). `min` is inclusive.
-  // Both rewards have a real effect on the checkout summary (see checkoutShipping() and GIFT_PRODUCT_ID):
-  // 'frete' zeroes the shipping only when the browser already has a previous order (simulated, see hasPreviousOrder()),
-  // 'brinde' adds the free viseira line. `tag` is the one-word headline used once this
-  // tier is reached but another remains (e.g. "Frete grátis garantido! Faltam R$X para ganhar ...!").
-  var GIFT_PRODUCT_ID = 'viseira-court-basic';
+  // 'frete' has a real effect (see checkoutShipping()): it zeroes the shipping only when the browser already has a
+  // previous order (simulated, see hasPreviousOrder()). There is deliberately no free-gift tier: the products belong to
+  // different brands, so giving one brand's item for buying from another makes no sense. `tag` is the one-word headline
+  // used once a tier is reached but another remains; the banner supports any number of tiers.
   var BENEFIT_TIERS = [
-    { id: 'frete', min: 250, name: 'Frete grátis para compras acima de R$ 250,00 — válido a partir da sua 2ª compra', short: 'frete grátis a partir da sua 2ª compra', tag: 'Frete grátis garantido!' },
-    { id: 'brinde', min: 350, name: 'Viseira Court Basic de brinde', short: 'uma viseira Court Basic de brinde', tag: 'Viseira garantida!' }
+    { id: 'frete', min: 500, name: 'Frete grátis para compras acima de R$ 500,00 — válido a partir da sua 2ª compra', short: 'frete grátis a partir da sua 2ª compra', tag: 'Frete grátis garantido!' }
   ];
 
 
@@ -1707,7 +1705,7 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     return !!(state.coupon && state.couponCode && COUPON_FREE_SHIPPING[state.couponCode]);
   }
 
-  // Works in cents to avoid float noise (e.g. 349.90 vs 350).
+  // Works in cents to avoid float noise (e.g. 499.90 vs 500).
   function benefitState(subtotal) {
     var cents = Math.round(subtotal * 100), reached = 0, i;
     for (i = 0; i < BENEFIT_TIERS.length; i++) if (cents >= BENEFIT_TIERS[i].min * 100) reached = i + 1;
@@ -1715,7 +1713,7 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     return { cents: cents, reached: reached, next: next, remaining: next ? next.min * 100 - cents : 0 };
   }
 
-  // True when the product subtotal reached the tier with this id ('frete' | 'brinde'). Inclusive, in cents.
+  // True when the product subtotal reached the tier with this id ('frete'). Inclusive, in cents.
   function tierReached(subtotal, id) {
     var cents = Math.round(subtotal * 100), i;
     for (i = 0; i < BENEFIT_TIERS.length; i++) if (BENEFIT_TIERS[i].id === id) return cents >= BENEFIT_TIERS[i].min * 100;
@@ -1724,7 +1722,7 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
 
   // Drop-ship: each brand (seller) ships its own package. A brand's package costs the highest `shipping` among its
   // items in the cart (quantity does not matter: it is one package); if all of them ship free, the package is free.
-  // The order's shipping is the sum of the packages. Works in cents. The free gift is not counted (it is not in the cart).
+  // The order's shipping is the sum of the packages. Works in cents.
   function shippingPackages() {
     var perSeller = {}, seller, total = 0, key, p, cents;
     for (key in state.cart) {
@@ -1749,10 +1747,11 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
   function benefitBanner(subtotal) {
     var b = benefitState(subtotal), top = BENEFIT_TIERS[BENEFIT_TIERS.length - 1].min, headline;
     var money = function (cents) { return fmtBRL(cents / 100); };
-    if (b.cents <= 0) headline = 'Compre acima de ' + fmtBRL(BENEFIT_TIERS[0].min) + ' e ganhe ' + BENEFIT_TIERS[0].short + '. Acima de ' + fmtBRL(top) + ', ganhe também ' + BENEFIT_TIERS[1].short + '.';
+    var shorts = BENEFIT_TIERS.map(function (t) { return t.short; });
+    if (b.cents <= 0) headline = 'Compre acima de ' + fmtBRL(BENEFIT_TIERS[0].min) + ' e ganhe ' + BENEFIT_TIERS[0].short + '.' + (BENEFIT_TIERS.length > 1 ? ' Acima de ' + fmtBRL(top) + ', ganhe também ' + BENEFIT_TIERS[1].short + '.' : '');
     else if (b.reached === 0) headline = 'Faltam ' + money(b.remaining) + ' para ganhar ' + BENEFIT_TIERS[0].short + '!';
     else if (b.reached < BENEFIT_TIERS.length) headline = BENEFIT_TIERS[b.reached - 1].tag + ' Faltam ' + money(b.remaining) + ' para ganhar ' + b.next.short + '!';
-    else headline = 'Parabéns! Você desbloqueou os dois benefícios: ' + BENEFIT_TIERS[0].short + ' e ' + BENEFIT_TIERS[1].short + '.';
+    else headline = 'Parabéns! Você desbloqueou ' + (shorts.length > 1 ? 'os benefícios: ' + shorts.join(' e ') : 'o benefício: ' + shorts[0]) + '.';
     var pct = Math.min(100, b.cents / (top * 100) * 100);
     var marks = BENEFIT_TIERS.map(function (t, i) {
       return '<span class="benefit-mark' + (b.reached > i ? ' on' : '') + '" style="left:' + (t.min / top * 100) + '%"></span>';
@@ -1766,7 +1765,7 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     return '<section class="card benefit reveal" aria-label="Benefícios do seu pedido">' +
       '<div class="benefit-kicker">Benefícios do seu pedido</div>' +
       '<p class="benefit-head">' + headline + '</p>' +
-      '<div class="benefit-bar" role="progressbar" aria-valuemin="0" aria-valuemax="' + top + '" aria-valuenow="' + Math.min(top, Math.floor(b.cents / 100)) + '" aria-label="Progresso até os brindes">' +
+      '<div class="benefit-bar" role="progressbar" aria-valuemin="0" aria-valuemax="' + top + '" aria-valuenow="' + Math.min(top, Math.floor(b.cents / 100)) + '" aria-label="Progresso até os benefícios">' +
         '<div class="benefit-fill" style="width:' + pct.toFixed(1) + '%"></div>' + marks + '</div>' +
       '<div class="benefit-tiers">' + tiers + '</div>' +
       '<p class="benefit-note">Considera o valor dos produtos, antes de cupom e frete.</p>' +
@@ -1800,7 +1799,6 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
     var disc = cartDiscounts(subtotal), discount = disc.coupon, kitOff = disc.kit;
     var ship = checkoutShipping(subtotal);
     var shipping = ship.amount;
-    var gift = ids.length > 0 && tierReached(subtotal, 'brinde') ? PRODUCTS[GIFT_PRODUCT_ID] : null;
     var total = subtotal - kitOff - discount + shipping;
     return '' +
     '<div class="checkout-layout">' +
@@ -1835,7 +1833,6 @@ var BRAND_LOGOS = {"CourtWear": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
           var sk = splitKey(id), p = PRODUCTS[sk.id], qty = state.cart[id];
           return '<div class="summary-row"><span>' + p.name + (sk.size ? ' (Tamanho ' + escapeHtml(sk.size) + ')' : '') + (qty > 1 ? ' (x' + qty + ')' : '') + ' — ' + p.seller + '</span><span>' + fmtBRL(p.price * qty) + '</span></div>';
         }).join('')) +
-        (gift ? '<div class="summary-row"><span>' + gift.name + ' (x1) — ' + gift.seller + ' <strong style="color:var(--price);">Brinde</strong></span><span style="color:var(--price);">' + fmtBRL(0) + '</span></div>' : '') +
         (kitOff > 0 ? '<div class="summary-row" style="color:var(--price);"><span>Desconto do kit (' + Math.round(KIT_DISCOUNT * 100) + '%)</span><span>-' + fmtBRL(kitOff) + '</span></div>' : '') +
         checkoutCouponField() +
         (state.coupon ? '<div class="summary-row" style="color:var(--price);"><span>Cupom</span><span>-' + fmtBRL(discount) + '</span></div>' : '') +
